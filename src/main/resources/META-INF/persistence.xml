@@ -1,0 +1,23 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<persistence version="2.1" xmlns="http://xmlns.jcp.org/xml/ns/persistence" xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" xsi:schemaLocation="http://xmlns.jcp.org/xml/ns/persistence http://xmlns.jcp.org/xml/ns/persistence/persistence_2_1.xsd">
+  <persistence-unit name="APPFACTU_PU" transaction-type="JTA">
+    <jta-data-source>java:app/jdbc/factura</jta-data-source>
+    <class>sv.edu.facturacion.entidades.FormaPago</class>
+    <class>sv.edu.facturacion.entidades.Usuario</class>
+    <class>sv.edu.facturacion.entidades.Empleado</class>
+    <class>sv.edu.facturacion.entidades.Sucursal</class>
+    <class>sv.edu.facturacion.entidades.Factura</class>
+    <class>sv.edu.facturacion.entidades.Cliente</class>
+    <class>sv.edu.facturacion.entidades.Producto</class>
+    <class>sv.edu.facturacion.entidades.Estado</class>
+    <class>sv.edu.facturacion.entidades.DetalleFactura</class>
+    <exclude-unlisted-classes>false</exclude-unlisted-classes>
+    <properties>
+      <property name="javax.persistence.jdbc.url" value="jdbc:sqlserver://localhost:1433;databaseName=FACTURA"/>
+      <property name="javax.persistence.jdbc.user" value="sa"/>
+      <property name="javax.persistence.jdbc.driver" value="com.microsoft.sqlserver.jdbc.SQLServerDriver"/>
+      <property name="javax.persistence.jdbc.password" value="Salvador2024."/>
+      <property name="javax.persistence.schema-generation.database.action" value="create"/>
+    </properties>
+  </persistence-unit>
+</persistence>

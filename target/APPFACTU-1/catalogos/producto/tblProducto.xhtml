@@ -1,0 +1,77 @@
+<?xml version='1.0' encoding='UTF-8' ?>
+<!DOCTYPE composition PUBLIC "-//W3C//DTD XHTML 1.0 Transitional//EN" "http://www.w3.org/TR/xhtml1/DTD/xhtml1-transitional.dtd">
+<ui:composition xmlns:ui="http://xmlns.jcp.org/jsf/facelets"
+                template="./../../plantilla/plantilla.xhtml"
+                xmlns:p="http://primefaces.org/ui"
+                xmlns:h="http://xmlns.jcp.org/jsf/html"
+                xmlns:f="http://xmlns.jcp.org/jsf/core"
+                xmlns="http://www.w3.org/1999/xhtml">
+
+    <ui:define name="content">
+        <h:form id="frmProducto">
+            <p:toolbar style="float:right">
+                <p:toolbarGroup>
+                    <p:commandButton value="Nuevo Producto" icon="ui-icon-plus" oncomplete="PF('wdlgAgregar').show()" actionListener="#{productoControl.limpiar}"
+                                     update=":frmAgregar" process="@this">
+                        <f:setPropertyActionListener value="Agregar" target="#{productoControl.accion}"/>
+                    </p:commandButton>  
+                </p:toolbarGroup>                
+            </p:toolbar>
+
+            <p:dataTable value="#{productoControl.lstProducto}" var="prod">
+                <f:facet name="header">
+                    <h2>Lista de productos</h2>
+                </f:facet>
+                <p:column headerText="Código">
+                    <h:outputText value="#{prod.idProducto}"/>
+                </p:column>
+                <p:column headerText="Descripción">
+                    <h:outputText value="#{prod.descripcion}"/>
+                </p:column>
+                <p:column headerText="Precio">
+                    <h:outputText value="#{prod.precio}"/>
+                </p:column>
+                <p:column headerText="Modificar" style="text-align: center">
+                    <p:commandButton icon="ui-icon-pencil" oncomplete="PF('wdlgAgregar').show()" update="frmAgregar">
+                        <f:setPropertyActionListener target="#{productoControl.accion}" value="Modificar"/>
+                        <f:setPropertyActionListener target="#{productoControl.productoSelected}" value="#{prod}"/>
+                    </p:commandButton>
+                </p:column>
+            </p:dataTable>
+        </h:form>
+    </ui:define>
+
+    <ui:define name="dialogos">
+        <p:dialog modal="true" id="dlgAgregar" widgetVar="wdlgAgregar">
+            <h:form id="frmAgregar">
+                <p:panel header="#{productoControl.accion} Producto">
+                    <p:panelGrid>
+                        <p:row>
+                            <p:column>
+                                <p:outputLabel value="Descripcion"/>
+                            </p:column>
+                            <p:column>
+                                <p:inputText value="#{productoControl.productoSelected.descripcion}"/>
+                            </p:column>                            
+                        </p:row>
+                        <p:row>
+                            <p:column>
+                                <p:outputLabel value="Precio"/>
+                            </p:column>
+                            <p:column>
+                                <p:inputNumber value="#{productoControl.productoSelected.precio}"/>
+                            </p:column>
+                        </p:row>
+                        <p:row>
+                            <p:column>
+                                <p:commandButton value="#{productoControl.accion}" oncomplete="PF('wdlgAgregar').hide()" update=":frmProducto growl" action="#{productoControl.doAccion()}"/>
+                            </p:column>
+                        </p:row>
+                    </p:panelGrid>
+                </p:panel>
+            </h:form>
+            
+        </p:dialog>
+        
+    </ui:define>
+</ui:composition>

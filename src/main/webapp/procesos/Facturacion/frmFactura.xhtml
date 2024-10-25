@@ -1,0 +1,257 @@
+<?xml version='1.0' encoding='UTF-8' ?>
+<!DOCTYPE composition PUBLIC "-//W3C//DTD XHTML 1.0 Transitional//EN" "http://www.w3.org/TR/xhtml1/DTD/xhtml1-transitional.dtd">
+<ui:composition xmlns:ui="http://xmlns.jcp.org/jsf/facelets"
+                template="./../../plantilla/plantilla.xhtml"
+                xmlns:h="http://xmlns.jcp.org/jsf/html"
+                xmlns:p="http://primefaces.org/ui"
+                xmlns:f="http://xmlns.jcp.org/jsf/core"
+                xmlns:c="http://xmlns.jcp.org/jsp/jstl/core">
+
+    <ui:define name="content">
+        <h:form id="frmFactura">
+            <p:growl autoUpdate="true"/>
+            <p:panel header="Datos Generales">
+                <f:facet name="header">
+                    <h:commandLink value="Regresar" action="tblFacturas.xhtml?faces-redirect=true"
+                                   immediate="true"/>
+                </f:facet>
+                <p:panelGrid>
+                    <p:row>
+                        <p:column>
+                            <p:outputLabel value="Fecha"/>
+                        </p:column>
+                        <p:column>
+                            <p:calendar value="#{facturaControl.facturaSelected.fecha}"
+                                        pattern="dd/MM/yyyy" locale="es_SV"
+                                        navigator="true"/>
+                        </p:column>
+                        <p:column>
+                            <p:outputLabel value="Cliente: "/>
+                        </p:column>
+                        <p:column>
+                            <p:commandButton process="@this" icon="ui-icon-search" oncomplete="PF('wdlgCliente').show()"/>
+                        </p:column>
+                        <p:column>
+                            <p:outputLabel id="codigoCliente" value="#{facturaControl.facturaSelected.idCliente.idCliente}"/>
+                        </p:column>
+                        <p:column>
+                            <p:outputLabel id="nombreCliente" value="#{facturaControl.facturaSelected.idCliente.nombre}"/>
+                        </p:column>    
+                    </p:row>     
+                    <p:row>
+                        <p:column>
+                            <p:outputLabel value="Empleado"/>
+                        </p:column>
+                        <p:column>
+                            <p:selectOneMenu id="empleado" 
+                                             value="#{facturaControl.facturaSelected.idEmpleado}" 
+                                             converter="entityConverter"
+                                             effect="fade" var="emp" style="width:160px" 
+                                             filter="true" filterMatchMode="containts"
+                                             required="true" 
+                                             requiredMessage="Debe seleccionar un empleado">
+                                <f:selectItem itemLabel="--SELECCIONE--" itemValue="#{null}"/>
+                                <f:selectItems value="#{facturaControl.lstEmpleados}" 
+                                               var="emp" itemLabel="#{emp.nombre}" 
+                                               itemValue="#{emp}" />
+                                <p:column>
+                                    <h:outputText value="#{emp.idEmpleado}" />
+                                </p:column>
+
+                                <p:column>
+                                    <h:outputText value="#{emp.nombre}" />
+                                </p:column>
+                            </p:selectOneMenu>
+                        </p:column>
+                        <p:column>
+                            <p:outputLabel value="Forma de Pago"/>
+                        </p:column>
+                        <p:column>
+                            <p:selectOneMenu id="formaPago" 
+                                             value="#{facturaControl.facturaSelected.idFormaPago}" 
+                                             converter="entityConverter"
+                                             effect="fade" var="fp" style="width:160px" 
+                                             filter="true" filterMatchMode="containts"
+                                             required="true" 
+                                             requiredMessage="Debe seleccionar una forma de pago">
+                                <f:selectItem itemLabel="--SELECCIONE--" itemValue="#{null}"/>
+                                <f:selectItems value="#{facturaControl.lstFormaPago}" 
+                                               var="fp" itemLabel="#{fp.descripcion}" 
+                                               itemValue="#{fp}" />
+                                <p:column>
+                                    <h:outputText value="#{fp.descripcion}" />
+                                </p:column>
+
+                            </p:selectOneMenu>
+                        </p:column>
+                    </p:row>
+                </p:panelGrid>
+            </p:panel>   
+            <p:panel id="pnlDetalle" header="Detalle">
+                <p:panelGrid>                   
+                    <p:row>
+                        <p:column>
+                            <p:outputLabel value="Producto"/>
+                        </p:column>
+                        <p:column>
+                            <p:commandButton value="Buscar" 
+                                             oncomplete="PF('wdlgProducto').show()" process="@this"/>
+                        </p:column>
+                        <p:column>
+                            <p:outputLabel id="codigoProducto"
+                                           value="#{facturaControl.detalleFacturaSelected.idProducto.idProducto}"/>
+                        </p:column>
+                        <p:column>
+                            <p:outputLabel id="nombreProducto"
+                                           value="#{facturaControl.detalleFacturaSelected.idProducto.descripcion}"/>
+                        </p:column>
+                        <p:column>
+                            <p:outputLabel id="precioProducto"
+                                           value="#{facturaControl.detalleFacturaSelected.idProducto.precio}"/>
+                        </p:column>
+                        <p:column>
+                            <p:outputLabel value="Cantidad: "/>
+                        </p:column>
+                        <p:column>
+                            <p:inputText id="cantidad" value="#{facturaControl.detalleFacturaSelected.cantidad}">
+                                <f:convertNumber integerOnly="true"/>
+                                <p:ajax event="keyup" update="iva total" 
+                                        listener="#{facturaControl.calcularMontos}"
+                                        process="@this precioProducto"/>
+                            </p:inputText>
+                        </p:column>
+                        <p:column>
+                            <p:outputLabel value="Iva"/>
+                        </p:column>
+                        <p:column>
+                            <p:inputText id="iva" readonly="true"
+                                         value="#{facturaControl.detalleFacturaSelected.iva}"/>
+                        </p:column>
+                        <p:column>
+                            <p:outputLabel value="Total"/>
+                        </p:column>
+                        <p:column>
+                            <p:inputText id="total" readonly="true" 
+                                         value="#{facturaControl.detalleFacturaSelected.total}"/>
+                        </p:column>
+                    </p:row>
+                    <p:row>
+                        <p:column colspan="11" style="text-align: center">
+                            <p:commandButton update="pnlDetalle tblDetalle" value="GUARDAR" action="#{facturaControl.guardarDetalle}"/>
+                        </p:column>
+                    </p:row>
+                </p:panelGrid>
+                <p:dataTable value="#{facturaControl.facturaSelected.detalleFacturaList}" 
+                             var="det" id="tblDetalle"  sortBy="#{det.idFactura.idFactura}">
+                    <p:column headerText="PRODUCTO">
+                        <p:outputLabel value="#{det.idProducto.descripcion}"/>
+                    </p:column>
+                    <p:column headerText="PRECIO">
+                        <p:outputLabel value="#{det.idProducto.precio}"/>
+                    </p:column>
+                    <p:column headerText="CANTIDAD">
+                        <p:outputLabel value="#{det.cantidad}"/>
+                    </p:column>
+                    <p:column headerText="IVA">
+                        <p:outputLabel value="#{det.iva}"/>
+                    </p:column>
+                    <p:column headerText="TOTAL">
+                        <p:outputLabel value="#{det.total}"/>
+                    </p:column>     
+                    <p:column>
+                        <p:commandButton value="Borrar" oncomplete="PF('wdlgBorrar').show()" >
+                            <f:setPropertyActionListener 
+                                target="#{facturaControl.detalleFacturaSelected}" 
+                                value="#{det}"/>
+                        </p:commandButton>
+                    </p:column>
+                    <p:summaryRow>
+                        <p:column colspan="4" style="text-align:right">
+                            <h:outputText value="Total:" />
+                        </p:column>
+                        <p:column>
+                            <h:outputText value="#{facturaControl.sumarTotales}">
+                                <f:convertNumber type="currency" currencySymbol="$" />
+                            </h:outputText>
+                        </p:column>
+                    </p:summaryRow>
+                </p:dataTable>
+                <p:dialog modal="true" widgetVar="wdlgBorrar">
+                    <p:panelGrid columns="2">
+                        <p:outputLabel value="¿Desea borrar el registro?"/>
+                        <h:panelGroup/>
+                        <p:commandButton value="SI" oncomplete="PF('wdlgBorrar').hide()" 
+                                         action="#{facturaControl.borrarDetalle()}" 
+                                         update="tblDetalle"/>
+                        <p:commandButton value="NO" oncomplete="PF('wdlgBorrar').hide()"/>                        
+                    </p:panelGrid>                    
+                </p:dialog>
+            </p:panel>
+        </h:form>
+
+
+        <p:dialog id="dlgCliente" widgetVar="wdlgCliente" modal="true" showEffect="explode">
+            <h:form>
+                <p:dataTable value="#{facturaControl.lstClientes}" var="cliente">
+                    <p:column headerText="CODIGO">
+                        <p:outputLabel value="#{cliente.idCliente}"/>
+                    </p:column>
+                    <p:column headerText="NOMBRE">
+                        <p:outputLabel value="#{cliente.nombre}"/>
+                    </p:column>
+                    <p:column headerText="DIRECCION">
+                        <p:outputLabel value="#{cliente.direccion}"/>
+                    </p:column>
+                    <p:column headerText="TELEFONO">
+                        <p:outputLabel value="#{cliente.telefono}"/>
+                    </p:column>
+                    <p:column headerText="Acciones">
+                        <p:commandButton value="Seleccionar" 
+                                         update=":frmFactura:codigoCliente 
+                                         :frmFactura:nombreCliente" 
+                                         oncomplete="PF('wdlgCliente').hide()">
+                            <f:setPropertyActionListener 
+                                target="#{facturaControl.facturaSelected.idCliente}" 
+                                value="#{cliente}"/>
+                        </p:commandButton>
+                    </p:column>
+                </p:dataTable>
+            </h:form>
+        </p:dialog>
+
+
+        <p:dialog id="dlgProducto" widgetVar="wdlgProducto" modal="true" showEffect="explode">
+            <h:form>
+                <p:dataTable value="#{facturaControl.lstProductos}" var="prod">
+                    <p:column headerText="CODIGO">
+                        <p:outputLabel value="#{prod.idProducto}"/>
+                    </p:column>
+                    <p:column headerText="NOMBRE">
+                        <p:outputLabel value="#{prod.descripcion}"/>
+                    </p:column>
+                    <p:column headerText="DIRECCION">
+                        <p:outputLabel value="#{prod.precio}"/>
+                    </p:column>
+                    <p:column headerText="Acciones">
+                        <p:commandButton value="Seleccionar" 
+                                         update=":frmFactura:codigoProducto 
+                                         :frmFactura:nombreProducto 
+                                         :frmFactura:precioProducto
+                                         :frmFactura:iva
+                                         :frmFactura:total"  
+                                         oncomplete="PF('wdlgProducto').hide()" 
+                                         actionListener="#{facturaControl.calcularMontos()}"
+                                         process="@this :frmFactura:precioProducto"
+                                         >
+                            <f:setPropertyActionListener 
+                                target="#{facturaControl.detalleFacturaSelected.idProducto}" 
+                                value="#{prod}"/>
+                        </p:commandButton>
+                    </p:column>
+                </p:dataTable>
+            </h:form>
+        </p:dialog>
+
+    </ui:define>
+
+</ui:composition>

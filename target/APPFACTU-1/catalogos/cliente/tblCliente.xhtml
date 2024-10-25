@@ -1,0 +1,89 @@
+<?xml version='1.0' encoding='UTF-8' ?>
+<!DOCTYPE composition PUBLIC "-//W3C//DTD XHTML 1.0 Transitional//EN" "http://www.w3.org/TR/xhtml1/DTD/xhtml1-transitional.dtd">
+<ui:composition xmlns:ui="http://xmlns.jcp.org/jsf/facelets"
+                template="./../../plantilla/plantilla.xhtml"
+                xmlns:h="http://xmlns.jcp.org/jsf/html"
+                xmlns:p="http://primefaces.org/ui"
+                xmlns:f="http://xmlns.jcp.org/jsf/core"
+                xmlns="http://www.w3.org/1999/xhtml">
+    <ui:define name="content">
+        <h:form id="frmCliente" acceptcharset="ISO-8859-1">            
+            <p:toolbar style="float:right">
+                <p:toolbarGroup>
+                    <p:commandButton value="Nuevo Cliente" icon="ui-icon-plus" oncomplete="PF('wdlgCliente').show()" actionListener="#{clienteControl.limpiar}"
+                                     update=":frmAgregar" process="@this">
+                        <f:setPropertyActionListener value="Agregar" target="#{clienteControl.accion}"/>
+                    </p:commandButton>  
+                </p:toolbarGroup>                
+            </p:toolbar>
+
+            <p:dataTable id="tblCliente" var="cliente" value="#{clienteControl.lstClientes}"
+                         rows="10"
+                         paginator="true"
+                         paginatorTemplate="{CurrentPageReport} {FirstPageLink} {PreviousPageLink} {PageLinks} {NextPageLink} {LastPageLink} {RowsPerPageDropdown}"
+                         rowsPerPageTemplate="10,20,50,100" paginatorPosition="bottom">
+                <f:facet name="header">  
+                    <h2>Lista de clientes</h2>
+
+                </f:facet>
+                <p:column headerText="Nombre">
+                    <h:outputText value="#{cliente.nombre}"/>
+                </p:column>
+                <p:column headerText="Dirección">
+                    <h:outputText value="#{cliente.direccion}"/>
+                </p:column>
+                <p:column headerText="Teléfono">
+                    <h:outputText value="#{cliente.telefono}"/>
+                </p:column>
+                <p:column headerText="Acciones" style="text-align: center">
+                    <p:commandButton value="Editar" update=":frmAgregar" oncomplete="PF('wdlgCliente').show()" process="@this">
+                        <f:setPropertyActionListener value="#{cliente}" target="#{clienteControl.clienteSelected}"/>
+                        <f:setPropertyActionListener value="Modificar" target="#{clienteControl.accion}"/>
+                    </p:commandButton>
+                </p:column>
+            </p:dataTable>
+        </h:form>
+    </ui:define>
+
+    <ui:define name="dialogos">
+        <p:dialog id="dlgCliente" widgetVar="wdlgCliente" header="#{clienteControl.accion} cliente" modal="true">
+            <h:form id="frmAgregar" acceptcharset="ISO-8859-1">  
+                <p:panel header="#{clienteControl.accion}"> 
+                    <p:panelGrid>
+                        <p:row>
+                            <p:column>
+                                <p:outputLabel value="Nombre: "/>
+                            </p:column>
+                            <p:column>
+                                <p:inputText value="#{clienteControl.clienteSelected.nombre}"/>
+                            </p:column>                    
+                        </p:row>       
+                        <p:row>
+                            <p:column>
+                                <p:outputLabel value="Direccion"/>
+                            </p:column>
+                            <p:column>
+                                <p:inputText value="#{clienteControl.clienteSelected.direccion}"/>
+                            </p:column>
+                        </p:row>
+                        <p:row>
+                            <p:column>
+                                <p:outputLabel value="Teléfono"/>
+                            </p:column>
+                            <p:column>
+                                <p:inputMask mask="99999999" value="#{clienteControl.clienteSelected.telefono}"/>
+                            </p:column>
+                        </p:row>
+                        <p:row>
+                            <p:column>
+                                <p:commandButton value="#{clienteControl.accion}" action="#{clienteControl.doAccion}" 
+                                                 oncomplete="PF('wdlgCliente').hide()" update=":frmCliente :growl">
+                                </p:commandButton>
+                            </p:column>
+                        </p:row>
+                    </p:panelGrid>  
+                </p:panel>
+            </h:form>
+        </p:dialog>
+    </ui:define>
+</ui:composition>

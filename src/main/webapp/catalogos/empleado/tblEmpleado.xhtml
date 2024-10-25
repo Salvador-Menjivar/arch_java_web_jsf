@@ -1,0 +1,119 @@
+<?xml version='1.0' encoding='UTF-8' ?>
+<!DOCTYPE composition PUBLIC "-//W3C//DTD XHTML 1.0 Transitional//EN" "http://www.w3.org/TR/xhtml1/DTD/xhtml1-transitional.dtd">
+<ui:composition xmlns:ui="http://xmlns.jcp.org/jsf/facelets"
+                template="./../../plantilla/plantilla.xhtml"
+                xmlns:h="http://xmlns.jcp.org/jsf/html"
+                xmlns:p="http://primefaces.org/ui"
+                xmlns:f="http://xmlns.jcp.org/jsf/core"
+                xmlns="http://www.w3.org/1999/xhtml">
+
+    <ui:define name="content">
+        <h:form id="frmEmpleado">
+            <p:toolbar style="float:right">
+                <p:toolbarGroup>
+                    <p:commandButton value="Nuevo Empleado" icon="ui-icon-plus" oncomplete="PF('wdlgEmpleado').show()" actionListener="#{empleadoControl.limpiar}"
+                                     update=":frmAgregar" process="@this">
+                        <f:setPropertyActionListener value="Agregar" target="#{empleadoControl.accion}"/>
+                    </p:commandButton>  
+                </p:toolbarGroup>                
+            </p:toolbar>
+
+            <p:dataTable var="empleado" value="#{empleadoControl.lstEmpleado}"
+                         rows="10"
+                         paginator="true"
+                         paginatorTemplate="{CurrentPageReport} {FirstPageLink} {PreviousPageLink} {PageLinks} {NextPageLink} {LastPageLink} {RowsPerPageDropdown}"
+                         rowsPerPageTemplate="10,20,50,100" paginatorPosition="bottom">
+                <f:facet name="header">
+                    <h2>Lista de empleados</h2>
+                </f:facet>
+                <p:column headerText="Nombre">
+                    <h:outputText value="#{empleado.nombre}"/>
+                </p:column>
+                <p:column headerText="Dui">
+                    <h:outputText value="#{empleado.dui}"/>
+                </p:column>
+                <p:column headerText="Fecha de ingreso">
+                    <h:outputText value="#{empleado.fechaIngreso}">
+                        <f:convertDateTime pattern="dd/MM/yyyy"/>
+                    </h:outputText>
+                </p:column>
+                <p:column headerText="Fecha de nacimiento">
+                    <h:outputText value="#{empleado.fechaNacimiento}">
+                        <f:convertDateTime pattern="dd/MM/yyyy"/>
+                    </h:outputText>
+                </p:column>
+                <p:column headerText="Salario">
+                    <h:outputText value="#{empleado.salario}">
+                        <f:convertNumber currencySymbol="$" type="currency"/>
+                    </h:outputText>
+                </p:column>
+                <p:column headerText="Acciones">
+                    <p:commandButton value="Editar" icon="ui-icon-pencil" oncomplete="PF('wdlgEmpleado').show()" update="frmAgregar">
+                        <f:setPropertyActionListener target="#{empleadoControl.accion}" value='Modificar'/>
+                        <f:setPropertyActionListener target="#{empleadoControl.empleadoSelected}" value='#{empleado}'/>
+                    </p:commandButton>
+                </p:column>
+            </p:dataTable>
+        </h:form>
+    </ui:define>
+
+    <ui:define name="dialogos">
+        <p:dialog modal="true" id="dlgEmpleado" widgetVar="wdlgEmpleado">
+            <h:form id="frmAgregar">
+                <p:panel header="#{empleadoControl.accion}">
+                    <p:panelGrid>
+                        <p:row>
+                            <p:column>
+                                <p:outputLabel value="Nombre:"/>
+                            </p:column>
+                            <p:column>
+                                <p:inputText value="#{empleadoControl.empleadoSelected.nombre}"/>
+                            </p:column>
+                        </p:row>
+                        <p:row>
+                            <p:column>
+                                <p:outputLabel value="Dui:"/>
+                            </p:column>
+                            <p:column>
+                                <p:inputMask mask="999999999" value="#{empleadoControl.empleadoSelected.dui}"/>
+                            </p:column>                            
+                        </p:row>
+                        <p:row>
+                            <p:column>
+                                <p:outputLabel value="Fecha de ingreso" for="fechaIngreso"/>
+                            </p:column>
+                            <p:column>
+                                <p:calendar id="fechaIngreso" value="#{empleadoControl.empleadoSelected.fechaIngreso}" navigator="true" pattern="dd/MM/yyyy"/>
+                            </p:column>
+                        </p:row>
+                        <p:row>
+                            <p:column>
+                                <p:outputLabel value="Fecha de nacimiento" for="fechaNacimiento"/>
+                            </p:column>
+                            <p:column>
+                                <p:calendar id="fechaNacimiento" value="#{empleadoControl.empleadoSelected.fechaNacimiento}" navigator="true" pattern="dd/MM/yyyy"/>
+                            </p:column>
+                        </p:row>
+                        <p:row>
+                            <p:column>
+                                <p:outputLabel value="Salario"/>
+                            </p:column>
+                            <p:column>
+                                <p:inputNumber value="#{empleadoControl.empleadoSelected.salario}"/>                                
+                            </p:column>
+                        </p:row>
+                        <p:row>
+                            <p:column>
+                                <p:commandButton value="#{empleadoControl.accion}" action="#{empleadoControl.doAccion()}" update=":frmEmpleado :growl" oncomplete="PF('wdlgEmpleado').hide()"
+                                                 />
+                            </p:column>
+                        </p:row>
+                    </p:panelGrid>
+
+                </p:panel>
+
+            </h:form>
+        </p:dialog>
+    </ui:define>
+
+</ui:composition>
