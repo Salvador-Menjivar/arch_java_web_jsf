@@ -8,6 +8,7 @@ Ejemplo desarrollado para explicar las arquitecturas que se pueden utilizar en J
 - [Tecnologías Usadas](En este se han usado las tecnologías #Java #JSF #MVC )
 - JSF
 - MVC
+- SQL Server
 - Inicio de sesión
 - Anotaciones de JSF
 - Entidades
